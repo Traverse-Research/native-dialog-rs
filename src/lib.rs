@@ -1,3 +1,14 @@
+#![cfg(any(
+    target_os = "windows",
+    all(
+        unix,
+        not(target_os = "macos"),
+        not(target_os = "ios"),
+        not(target_os = "android")
+    ),
+    target_os = "macos"
+))]
+
 #[cfg(target_os = "macos")]
 #[macro_use]
 extern crate objc;
