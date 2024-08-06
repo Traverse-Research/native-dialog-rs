@@ -8,9 +8,7 @@ use raw_window_handle::RawWindowHandle;
 pub trait INSWindow: INSObject {
     fn from_raw_handle(handle: RawWindowHandle) -> Option<Id<Self>> {
         match handle {
-            RawWindowHandle::AppKit(h) if !h.ns_window.is_null() => unsafe {
-                Some(Id::from_ptr(h.ns_window as _))
-            },
+            RawWindowHandle::AppKit(h) => unsafe { Some(Id::from_ptr(h.ns_view.as_ptr() as _)) },
             _ => None,
         }
     }
