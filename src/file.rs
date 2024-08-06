@@ -1,6 +1,6 @@
 use crate::dialog::{DialogImpl, OpenMultipleFile, OpenSingleDir, OpenSingleFile, SaveSingleFile};
 use crate::Result;
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use std::path::{Path, PathBuf};
 
 /// Represents a set of file extensions and their description.
@@ -84,8 +84,8 @@ impl<'a> FileDialog<'a> {
     }
 
     /// Sets the owner of the dialog. On Unix and GNU/Linux, this is a no-op.
-    pub fn set_owner<W: HasRawWindowHandle>(mut self, window: &W) -> Self {
-        self.owner = Some(window.raw_window_handle());
+    pub fn set_owner<W: HasWindowHandle>(mut self, window: &W) -> Self {
+        self.owner = window.window_handle().ok().map(|window| window.as_raw());
         self
     }
 
