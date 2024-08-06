@@ -1,6 +1,7 @@
 use crate::dialog::{DialogImpl, MessageAlert, MessageConfirm};
-use crate::{MessageType, Result};
+use crate::{MessageType, Modal, Result};
 use raw_window_handle::RawWindowHandle;
+use winapi::um::winuser::{MB_APPLMODAL, MB_SYSTEMMODAL, MB_TASKMODAL};
 
 impl DialogImpl for MessageAlert<'_> {
     fn show(&mut self) -> Result<Self::Output> {
@@ -12,6 +13,7 @@ impl DialogImpl for MessageAlert<'_> {
             typ: self.typ,
             owner: self.owner,
             ask: false,
+            modal: self.modal,
         })?;
         Ok(())
     }
@@ -27,6 +29,7 @@ impl DialogImpl for MessageConfirm<'_> {
             typ: self.typ,
             owner: self.owner,
             ask: true,
+            modal: self.modal,
         })
     }
 }
@@ -37,6 +40,7 @@ struct MessageBoxParams<'a> {
     typ: MessageType,
     owner: Option<RawWindowHandle>,
     ask: bool,
+    modal: Modal,
 }
 
 fn message_box(params: MessageBoxParams) -> Result<bool> {
@@ -70,8 +74,14 @@ fn message_box(params: MessageBoxParams) -> Result<bool> {
         MessageType::Error => MB_ICONERROR,
     } | if params.ask { MB_YESNO } else { MB_OK };
 
+    let modal = match params.modal {
+        Modal::App => MB_APPLMODAL,
+        Modal::System => MB_SYSTEMMODAL,
+        Modal::Task => MB_TASKMODAL,
+    };
+
     let ret = super::with_visual_styles(|| unsafe {
-        MessageBoxW(owner, text.as_ptr(), caption.as_ptr(), u_type)
+        MessageBoxW(owner, text.as_ptr(), caption.as_ptr(), u_type | modal)
     });
 
     match ret {
