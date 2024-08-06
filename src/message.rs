@@ -10,12 +10,21 @@ pub enum MessageType {
     Error,
 }
 
+#[derive(Copy, Clone, Default)]
+pub enum Modal {
+    #[default]
+    App,
+    System,
+    Task,
+}
+
 /// Builds and shows message dialogs.
 pub struct MessageDialog<'a> {
     pub(crate) title: &'a str,
     pub(crate) text: &'a str,
     pub(crate) typ: MessageType,
     pub(crate) owner: Option<RawWindowHandle>,
+    pub(crate) modal: Modal,
 }
 
 impl<'a> MessageDialog<'a> {
@@ -25,6 +34,7 @@ impl<'a> MessageDialog<'a> {
             text: "",
             typ: MessageType::Info,
             owner: None,
+            modal: Default::default(),
         }
     }
 
@@ -52,6 +62,11 @@ impl<'a> MessageDialog<'a> {
         self
     }
 
+    pub fn set_modal(mut self, modal: Modal) -> Self {
+        self.modal = modal;
+        self
+    }
+
     /// Sets the owner of the dialog by raw handle. On Unix and GNU/Linux, this is a no-op.
     ///
     /// # Safety
@@ -75,6 +90,7 @@ impl<'a> MessageDialog<'a> {
             text: self.text,
             typ: self.typ,
             owner: self.owner,
+            modal: self.modal,
         };
         dialog.show()
     }
@@ -86,6 +102,7 @@ impl<'a> MessageDialog<'a> {
             text: self.text,
             typ: self.typ,
             owner: self.owner,
+            modal: self.modal,
         };
         dialog.show()
     }

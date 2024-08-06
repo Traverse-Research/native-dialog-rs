@@ -1,5 +1,5 @@
 use super::Dialog;
-use crate::MessageType;
+use crate::{MessageType, Modal};
 use raw_window_handle::RawWindowHandle;
 
 pub struct MessageAlert<'a> {
@@ -8,6 +8,8 @@ pub struct MessageAlert<'a> {
     pub(crate) typ: MessageType,
     #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
     pub(crate) owner: Option<RawWindowHandle>,
+    #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
+    pub(crate) modal: Modal,
 }
 
 impl Dialog for MessageAlert<'_> {
@@ -20,6 +22,8 @@ pub struct MessageConfirm<'a> {
     pub(crate) typ: MessageType,
     #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
     pub(crate) owner: Option<RawWindowHandle>,
+    #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
+    pub(crate) modal: Modal,
 }
 
 impl Dialog for MessageConfirm<'_> {
